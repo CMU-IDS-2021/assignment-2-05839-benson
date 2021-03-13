@@ -196,10 +196,10 @@ def get_data():
 
 @st.cache
 def get_data_precalculated():
-	business_state = pd.read_csv("./data/business_state.csv")
-	business_county = pd.read_csv("./data/business_county.csv")
-	business_state_forshow = pd.read_csv("./data/business_state_forshow.csv")
-	business_county_forshow = pd.read_csv("./data/business_county_forshow.csv")
+	business_state = pd.read_csv("https://media.githubusercontent.com/media/SteinsGate9/assignemnt2/master/data/business_state.csv")
+	business_county = pd.read_csv("https://media.githubusercontent.com/media/SteinsGate9/assignemnt2/master/data/business_county.csv")
+	business_state_forshow = pd.read_csv("https://media.githubusercontent.com/media/SteinsGate9/assignemnt2/master/data/business_state_forshow.csv")
+	business_county_forshow = pd.read_csv("https://media.githubusercontent.com/media/SteinsGate9/assignemnt2/master/data/business_county_forshow.csv")
 
 	return business_state, business_county, business_state_forshow, business_county_forshow
 
