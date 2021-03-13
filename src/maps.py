@@ -4,7 +4,7 @@ from gettext import NullTranslations
 import pandas as pd
 import streamlit as st
 
-from utils import (
+from src.utils import (
 	generate_regions_choropleth,
 )
 

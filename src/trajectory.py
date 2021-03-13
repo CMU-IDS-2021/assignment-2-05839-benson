@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-from utils import generate_trajectory_chart
+from src.utils import generate_trajectory_chart
 
 from gettext import NullTranslations
 
