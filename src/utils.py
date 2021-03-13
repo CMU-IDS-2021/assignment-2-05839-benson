@@ -65,7 +65,7 @@ states_mapping = {
 @st.cache
 def get_data():
 	# get data
-	yelpb_url = "../data/business.json"
+	yelpb_url = "https://media.githubusercontent.com/media/SteinsGate9/05-839-a2/main/data/business.json"
 	business = pd.read_json(yelpb_url, lines=True)
 
 	# get other attributes
@@ -192,9 +192,18 @@ def get_data():
 	business_county_forshow = business_county_forshow.reset_index(level=0, drop=True)
 	business_county_forshow = business_county_forshow.merge(review, on="business_id", how='left' )
 
-	return business, business_state, business_county, business_state_forshow, business_county_forshow
+	return business_state, business_county, business_state_forshow, business_county_forshow
 
-business, business_state, business_county, business_state_forshow, business_county_forshow = get_data()
+@st.cache
+def get_data_precalculated():
+	business_state = pd.read_csv("./data/business_state.csv")
+	business_county = pd.read_csv("./data/business_county.csv")
+	business_state_forshow = pd.read_csv("./data/business_state_forshow.csv")
+	business_county_forshow = pd.read_csv("./data/business_county_forshow.csv")
+
+	return business_state, business_county, business_state_forshow, business_county_forshow
+
+business_state, business_county, business_state_forshow, business_county_forshow = get_data_precalculated()
 
 
 
