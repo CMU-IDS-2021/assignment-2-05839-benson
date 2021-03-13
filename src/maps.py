@@ -9,22 +9,20 @@ from utils import (
 )
 
 
-def choropleth_maps(data: pd.DataFrame, lang: NullTranslations) -> None:
-	_ = lang.gettext
-
+def choropleth_maps(data: pd.DataFrame) -> None:
 	# title
-	st.title(_("YELP in US - Geographical distribution"))
+	st.title("YELP in US - Geographical distribution")
 
 	# states / city
 	map_scale = st.radio(
-		label=_("1) What resolution would you like to visualise?"),
-		options=[_("state"), _("county")],
+		label="1) What resolution would you like to visualise?",
+		options=["state", "county"],
 	)
-	is_state = map_scale == _("state")
+	is_state = map_scale == "state"
 
 	# method
 	method = st.selectbox(
-		label=_("2) What method would you like to use to aggregate?"),
+		label="2) What method would you like to use to aggregate?",
 		options=["mean", "max", "min"],
 		index=0
 	)
@@ -32,7 +30,7 @@ def choropleth_maps(data: pd.DataFrame, lang: NullTranslations) -> None:
 	# indicator
 	if method == "mean":
 		feature = st.selectbox(
-			label=_("3) What indicator would you like to visualise?"),
+			label="3) What indicator would you like to visualise?",
 			options=["stars", "review_count", "is_open", "RestaurantsTableService", "BikeParking", "WiFi",
 					 "BusinessAcceptsCreditCards", "RestaurantsReservations", "WheelchairAccessible",
 					 "Caters", "OutdoorSeating", "RestaurantsGoodForGroups", "BusinessAcceptsBitcoin"],
@@ -40,7 +38,7 @@ def choropleth_maps(data: pd.DataFrame, lang: NullTranslations) -> None:
 		)
 	else:
 		feature = st.selectbox(
-			label=_("3) What indicator would you like to visualise?"),
+			label="3) What indicator would you like to visualise?",
 			options=["stars", "review_count"],
 			index=0
 		)

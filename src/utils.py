@@ -62,11 +62,10 @@ states_mapping = {
 	'WY': 'Wyoming'
 }
 
-
 @st.cache
 def get_data():
 	# get data
-	yelpb_url = "../data/yelp_academic_dataset_business.json"
+	yelpb_url = "../data/business.json"
 	business = pd.read_json(yelpb_url, lines=True)
 
 	# get other attributes
@@ -136,20 +135,14 @@ def get_data():
 
 		return pd.Series(lis)
 
-	# get state average
-	business_state = business.groupby("state").apply(collect)
-	business_state.columns = after_attributes
-	business_state["state"] = business_state.index
-
 	# change state ABBR -> state full name
 	def to_full(abbr):
 		if abbr in states_mapping:
 			return states_mapping[abbr]
 		else:
 			return None
-	business_state.state = business_state.state.apply(to_full)
-	business_state = business_state[business_state.state.notnull()]
-	business_state.reset_index(drop=True, inplace=True)
+	business.state = business.state.apply(to_full)
+	business = business[business.state.notnull()]
 
 	# get county from zipcode
 	from uszipcode import SearchEngine
@@ -162,27 +155,47 @@ def get_data():
 			return None
 	business['county'] = business.apply(lambda row: EOQ(row["postal_code"]), axis=1)
 
-	# get county average
-	business_county = business.groupby("county").apply(collect)
-	business_county.columns = after_attributes
-	business_county["county"] = business_county.index
-
 	# change state ABBR -> state full name
 	def to_abbr(abbr):
 		if abbr:
 			return abbr.split(" County")[0]
 		else:
 			return None
-	business_county.county = business_county.county.apply(to_abbr)
-	business_county = business_county[business_county.county.notnull()]
-	business_county.reset_index(drop=True, inplace=True)
+	business.county = business.county.apply(to_abbr)
+	business = business[business.county.notnull()]
+
+	# get state average
+	business_state = business.groupby("state").apply(collect)
+	business_state.columns = after_attributes
+	business_state["state"] = business_state.index
+
+	# get county average
+	business_county = business.groupby("county").apply(collect)
+	business_county.columns = after_attributes
+	business_county["county"] = business_county.index
+
 
 	# review data
-	yelpr_url = "../data/yelp_academic_dataset_review.json"
-	review = pd.read_json(yelpr_url, lines=True, nrows=200000)
+	yelpr_url = "../data/review.csv"
+	review = pd.read_csv(yelpr_url)
 
-	return business, business_state, business_county
-business, business_state, business_county = get_data()
+	# get view joined data
+	def collect(groupbys):
+		return groupbys.iloc[:10]
+	business_state_forshow = business.groupby("state").apply(collect)
+	business_state_forshow = business_state_forshow.reset_index(level=0, drop=True)
+	business_state_forshow = business_state_forshow.merge(review, on="business_id", how='left' )
+
+	def collect(groupbys):
+		return groupbys.iloc[:10]
+	business_county_forshow = business.groupby("county").apply(collect)
+	business_county_forshow = business_county_forshow.reset_index(level=0, drop=True)
+	business_county_forshow = business_county_forshow.merge(review, on="business_id", how='left' )
+
+	return business, business_state, business_county, business_state_forshow, business_county_forshow
+
+business, business_state, business_county, business_state_forshow, business_county_forshow = get_data()
+
 
 
 def generate_regions_choropleth(
@@ -263,7 +276,7 @@ def generate_trajectory_chart(
 	method: str,
 	is_states: bool,
 	padding: int = 5,
-	width: int = 700,
+	width: int = 500,
 	height: int = 500,
 ):
 	# shape of states
@@ -271,10 +284,12 @@ def generate_trajectory_chart(
 		property_title = "state"
 		property_name = "name"
 		data = business_state
+		data_forshow = business_state_forshow
 	else:
 		property_title = "county"
 		property_name = "name"
 		data = business_county
+		data_forshow = business_county_forshow
 
 	# display method
 	display_method = "%" if feature not in ["stars", "review_count"] else ""
@@ -293,28 +308,29 @@ def generate_trajectory_chart(
 			alt.Tooltip(f"{property_title}:N", title=f"{property_title}"),
 			alt.Tooltip(f"{method}_{feature}:Q", title=f"{method} of {feature}{display_method}", format=".2~f"),
 		],
+	).properties(
+		height=height,
+		width=width - 250
 	).add_selection(hover, click, highlight
-	).interactive()
+					).interactive()
 
-	# Data Tables
-	# st.write(business.head())
-	hist_chart = alt.Chart(data).mark_bar().encode(
-		y='mean_stars:N',
-		x=f'{property_title}:N'
-	).transform_filter(click)
+
+	hist_chart = alt.Chart(business_state_forshow).mark_point().encode(
+		y='stars_x:Q',
+		x='name:N',
+		tooltip=[
+			alt.Tooltip(f"name:N", title=f"name"),
+			alt.Tooltip(f"text:N", title=f"review"),
+			alt.Tooltip(f"date:N", title=f"date"),
+		],
+	).properties(
+		height=height,
+		width=250
+	).transform_filter(click).interactive()
 
 	# review chart
 	final_chart = (
-		(bar_chart)
-			.configure_view(strokeWidth=0)
-			.properties(width=width, height=height)
+		(bar_chart | hist_chart)
 	)
 
-	final_chart2 = (
-		(hist_chart)
-			.configure_view(strokeWidth=0)
-			.properties(width=width, height=height)
-	)
-
-
-	return final_chart, final_chart2
+	return final_chart
