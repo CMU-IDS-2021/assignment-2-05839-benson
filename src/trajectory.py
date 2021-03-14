@@ -8,7 +8,9 @@ from gettext import NullTranslations
 
 def trajectory_cases(data: pd.DataFrame) -> None:
 	# ti
-	st.markdown("# YELP in US - Statistical data")
+	st.header("Part 2: Yelp Statistical Data by Region")
+
+	st.markdown("Next, we took a state and national view to the data to understand the breakdown segmentations of data in Yelp. Select from the slider on the left to switch between views.")
 
 	# states / city
 	map_scale = st.radio(
