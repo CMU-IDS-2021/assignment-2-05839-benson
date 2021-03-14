@@ -28,9 +28,12 @@ if st.checkbox("Show Raw Dataset", False):
         
 #part 1
 st.header("Part 1: Yelp Businesses Across States")
+
 st.write("We broke down the raw data from Yelp to understand the classification of each business based on the state.")
+
 st.markdown("First, let's determine: what kind of business categories can we find in each state?")
-states = list(yelp_dataset_df.groupby(["state"]).count().sort_values(by="categories", ascending=False).head(15).index)
+
+states = list(yelp_dataset_df.groupby(["state"]).count().sort_values(by="categories", ascending=False).head(25).index)
 
 state = st.selectbox("Choose a state from Yelp you would like to analyze:", states)
 
