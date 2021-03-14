@@ -15,7 +15,7 @@ st.markdown("By Shicheng Huang and Jennifer Park")
 st.markdown("In this project, we will take you through an exploration of Yelp's business data to help visualize the landscape of businesses throughout the United States. We evaluate regional to national data in order to understand the current business landscape across the United States for listed businesses on Yelp.")
 
 #loading the data
-yelp_dataset_df = pd.read_csv("./data/yelp_academic_dataset_business.zip", lines=True)
+yelp_dataset_df = pd.read_csv("./data/yelp-academic-business.zip")
 
 #breaking down the data 
 st.header("Understanding the Business Yelp Database")
