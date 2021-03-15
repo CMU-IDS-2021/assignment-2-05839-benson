@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from src.utils import generate_trajectory_chart
-
+import altair as alt
 from gettext import NullTranslations
 
 
@@ -47,3 +47,44 @@ def trajectory_cases(data: pd.DataFrame) -> None:
 		feature, method, is_states=is_state
 	)
 	st.altair_chart(choropleth1)
+
+
+def business_by_states(yelp_dataset_df: pd.DataFrame):
+	#part 1
+	st.header("Part 1: Yelp Businesses Across States")
+
+	st.write("We broke down the raw data from Yelp to understand the classification of each business based on the state.")
+
+	st.markdown("First, let's determine: what kind of business categories can we find in each state?")
+
+	states = list(yelp_dataset_df.groupby(["state"]).count().sort_values(by="categories", ascending=False).head(25).index)
+
+	state = st.selectbox("Choose a state from Yelp you would like to analyze:", states)
+
+	# get rows with selected state
+	state_categories = yelp_dataset_df.loc[yelp_dataset_df['state'] == state]
+
+	# get categories col specifically
+	state_categories = state_categories['categories']
+
+	# get count of categories in cat col
+	state_categories_counts = state_categories.value_counts().to_dict()
+
+	# Trim array to 10 instances to not break altair
+	categories = [*state_categories]
+	categories = categories[0:10]
+
+	# Get array of counts associated with categories in categories array
+	categories_counts = [state_categories_counts[x] for x in categories]
+
+	# Plot using altair
+	source = pd.DataFrame({
+		'Categories': categories,
+		'Count': categories_counts
+	})
+
+	stateBarChart = alt.Chart(source).mark_bar().encode(
+		x='Count',
+		y='Categories'
+	)
+	st.write(stateBarChart)

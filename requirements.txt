@@ -1,3 +1,7 @@
-streamlit
-pandas
-altair
+pandas==1.2.3
+numpy==1.20.1
+altair==4.1.0
+matplotlib==3.3.4
+streamlit==0.78.0
+uszipcode==0.2.4
+vega_datasets==0.9.0

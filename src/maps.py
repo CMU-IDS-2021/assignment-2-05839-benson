@@ -11,7 +11,7 @@ from src.utils import (
 
 def choropleth_maps(data: pd.DataFrame) -> None:
 	# title
-	st.header("Part 2: Yelp Data by Geographical distribution")
+	st.header("Part 3: Yelp Data by Geographical distribution")
 
 	st.markdown("In this analysis, we will break down the data with a national visualization of the user's selected category. Select from the slider on the left to switch between views")
 
