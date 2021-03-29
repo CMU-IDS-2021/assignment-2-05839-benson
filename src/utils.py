@@ -62,7 +62,6 @@ states_mapping = {
 	'WY': 'Wyoming'
 }
 
-@st.cache
 def get_data():
 	# get data
 	yelpb_url = "https://media.githubusercontent.com/media/SteinsGate9/05-839-a2/main/data/business.json"
